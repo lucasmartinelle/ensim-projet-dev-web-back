@@ -1,0 +1,26 @@
+meta {
+  name: Me — token invalide
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: invalidtoken
+}
+
+tests {
+  expect(res.getStatus()).to.equal(401);
+  expect(res.getBody().message).to.equal('Unauthorized');
+}
+
+docs {
+  ## Me — token invalide
+
+  **Réponse attendue :** `401` `{ message: 'Unauthorized' }`
+}

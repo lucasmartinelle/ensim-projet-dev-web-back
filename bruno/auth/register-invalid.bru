@@ -1,0 +1,25 @@
+meta {
+  name: Register — validation invalide
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "not-an-email",
+    "username": "ab",
+    "password": "short"
+  }
+}
+
+docs {
+  ## Register — validation invalide
+
+  **Réponse attendue :** erreur Zod (email invalide, username trop court, password trop court)
+}
