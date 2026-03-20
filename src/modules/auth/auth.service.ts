@@ -26,10 +26,10 @@ export function generateToken(user: SafeUser): string {
 
 export async function register(data: RegisterInput): Promise<SafeUser> {
     const existingEmail = await prisma.user.findUnique({ where: { email: data.email } });
-    if (existingEmail) throw new Error('Email already used');
+    if (existingEmail) throw new Error('Cette adresse email est déjà utilisée');
 
     const existingUsername = await prisma.user.findUnique({ where: { username: data.username } });
-    if (existingUsername) throw new Error('Username already taken');
+    if (existingUsername) throw new Error("Ce nom d'utilisateur est déjà pris");
 
     const passwordHash = await bcrypt.hash(data.password, 10);
 
@@ -42,12 +42,12 @@ export async function register(data: RegisterInput): Promise<SafeUser> {
 
 export async function login(data: LoginInput): Promise<{ token: string; user: SafeUser }> {
     const user = await prisma.user.findUnique({ where: { email: data.email } });
-    if (!user || !user.passwordHash) throw new Error('Invalid credentials');
+    if (!user || !user.passwordHash) throw new Error('Identifiants invalides');
 
-    if (user.suspended) throw new Error('Account suspended');
+    if (user.suspended) throw new Error('Ce compte est suspendu');
 
     const valid = await bcrypt.compare(data.password, user.passwordHash);
-    if (!valid) throw new Error('Invalid credentials');
+    if (!valid) throw new Error('Identifiants invalides');
 
     const safeUser = toSafeUser(user);
     const token = generateToken(safeUser);

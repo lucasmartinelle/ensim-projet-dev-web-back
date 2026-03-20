@@ -16,7 +16,7 @@ auth:bearer {
 
 tests {
   expect(res.getStatus()).to.equal(401);
-  expect(res.getBody().message).to.equal('Unauthorized');
+  expect(res.getBody().message).to.equal('Non autorisé');
 }
 
 docs {

@@ -12,7 +12,7 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
     const authHeader = req.headers.authorization;
 
     if (!authHeader?.startsWith('Bearer ')) {
-        res.status(401).json({ message: 'Unauthorized' });
+        res.status(401).json({ message: 'Non autorisé' });
         return;
     }
 
@@ -27,13 +27,13 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
         });
 
         if (!user || user.suspended) {
-            res.status(401).json({ message: 'Unauthorized' });
+            res.status(401).json({ message: 'Non autorisé' });
             return;
         }
 
         req.user = { id: user.id, email: user.email, username: user.username, role: user.role };
         next();
     } catch {
-        res.status(401).json({ message: 'Unauthorized' });
+        res.status(401).json({ message: 'Non autorisé' });
     }
 }
