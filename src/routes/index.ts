@@ -3,5 +3,5 @@ import {Router} from 'express';
 
 export const router = Router();
 
-router.get('/health', (req, res) => res.json({status: 'OK'}));
+router.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date().toISOString() }));
 //router.use('/users', userRoutes);
