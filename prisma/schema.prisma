@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  username     String        @unique
+  passwordHash String?
+  role         Role          @default(PLAYER)
+  suspended    Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  scores       Score[]
+  matchPlayers MatchPlayer[]
+  googleId     String?       @unique
+  githubId     String?       @unique
+}
+
+model Game {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  coverImage  String?
+  createdAt   DateTime @default(now())
+  scores      Score[]
+  matches     Match[]
+}
+
+model Score {
+  id        String   @id @default(uuid())
+  value     Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId    String
+}
+
+model Match {
+  id        String        @id @default(uuid())
+  status    MatchStatus   @default(WAITING)
+  createdAt DateTime      @default(now())
+  endedAt   DateTime?
+  game      Game          @relation(fields: [gameId], references: [id])
+  gameId    String
+  players   MatchPlayer[]
+}
+
+model MatchPlayer {
+  match   Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  matchId String
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  role    MatchRole @default(PLAYER)
+  score   Int?
+
+  @@id([matchId, userId])
+}
+
+model HomeContent {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  PLAYER
+  ADMIN
+}
+
+enum MatchStatus {
+  WAITING
+  ONGOING
+  FINISHED
+}
+
+enum MatchRole {
+  PLAYER
+  SPECTATOR
+}
