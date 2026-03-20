@@ -68,6 +68,11 @@ npm run dev     # Démarrage en développement (nodemon + ts-node)
 npm run build   # Compilation TypeScript → dist/
 npm run start   # Démarrage depuis dist/ (production)
 npm run lint    # ESLint
+
+sudo docker compose -f <docker-compose.yml> up -d # en mode détaché
+sudo docker logs -f # voir les logs au premier plan
+sudo docker ps # voir l'état des conteneurs
+sudo docker down # arrêt des conteneurs
 ```
 
 ### Route de santé
