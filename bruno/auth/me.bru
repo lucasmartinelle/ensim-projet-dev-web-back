@@ -1,0 +1,33 @@
+meta {
+  name: Me
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.user).to.have.property('id');
+  expect(body.user).to.have.property('email');
+  expect(body.user).to.not.have.property('passwordHash');
+}
+
+docs {
+  ## Me
+  
+  Retourne le profil de l'utilisateur authentifié.
+  
+  Lancer **Login** d'abord — le token est sauvegardé automatiquement.
+  
+  **Réponse attendue :** `200` + `{ user }`
+}
