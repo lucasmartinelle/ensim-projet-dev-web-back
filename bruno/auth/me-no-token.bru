@@ -1,0 +1,17 @@
+meta {
+  name: Me — sans token
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/auth/me
+  body: none
+  auth: none
+}
+
+docs {
+  ## Me — sans token
+
+  **Réponse attendue :** `401` `{ message: "Unauthorized" }`
+}
