@@ -1,7 +1,7 @@
 meta {
   name: Admin - List Users
   type: http
-  seq: 5
+  seq: 4
 }
 
 get {
@@ -25,10 +25,9 @@ tests {
 
 docs {
   ## Admin — List Users
-  
-  Liste paginée de tous les utilisateurs. Requiert un token admin (`adminToken`).
-  
-  Paramètres optionnels : `?page=1&limit=20`
-  
+
+  Liste paginée des utilisateurs. Paramètres : `?page=&limit=&search=`.
+  Requiert un token admin.
+
   **Réponse attendue :** `200` + `{ data, total, page, limit }`
 }
