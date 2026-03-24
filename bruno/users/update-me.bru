@@ -1,0 +1,37 @@
+meta {
+  name: Update Me
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}/api/users/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "username": "newusername"
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.user).to.have.property('username', 'newusername');
+  expect(body.user).to.not.have.property('passwordHash');
+}
+
+docs {
+  ## Update Me
+
+  Met à jour le profil de l'utilisateur authentifié.
+  Au moins un champ (`username` ou `email`) est requis.
+
+  **Réponse attendue :** `200` + `{ user }`
+}

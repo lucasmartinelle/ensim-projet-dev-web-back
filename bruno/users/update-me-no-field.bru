@@ -1,0 +1,31 @@
+meta {
+  name: Update Me - Aucun champ
+  type: http
+  seq: 3
+}
+
+patch {
+  url: <user-id>{{baseUrl}}/api/users/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(400);
+}
+
+docs {
+  ## Update Me — Aucun champ
+  
+  Doit retourner 400 si aucun champ n'est fourni (refine Zod).
+  
+  **Réponse attendue :** `400`
+}
