@@ -1,0 +1,27 @@
+meta {
+  name: Delete Me
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/users/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(204);
+}
+
+docs {
+  ## Delete Me
+
+  Supprime le compte de l'utilisateur authentifié (cascade sur scores et matchPlayers).
+
+  **Réponse attendue :** `204` (pas de corps)
+}

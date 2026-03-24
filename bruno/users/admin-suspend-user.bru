@@ -1,0 +1,41 @@
+meta {
+  name: Admin - Suspend User
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/api/users/:id/suspend
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+params:path {
+  id: <user-id>
+}
+
+body:json {
+  {
+    "suspended": true
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.user).to.have.property('suspended', true);
+}
+
+docs {
+  ## Admin — Suspend User
+
+  Suspend ou réactive un utilisateur. Remplacer `:id` par l'UUID de l'utilisateur cible.
+
+  Une fois suspendu, l'utilisateur ne peut plus se connecter (retour 401 au login).
+
+  **Réponse attendue :** `200` + `{ user }` avec `suspended: true`
+}

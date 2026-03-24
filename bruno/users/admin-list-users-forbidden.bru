@@ -1,0 +1,27 @@
+meta {
+  name: Admin - List Users - Forbidden
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(403);
+}
+
+docs {
+  ## Admin — List Users (Forbidden)
+
+  Un token joueur (non admin) doit recevoir un 403.
+
+  **Réponse attendue :** `403`
+}

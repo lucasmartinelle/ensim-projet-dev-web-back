@@ -1,0 +1,31 @@
+meta {
+  name: Admin - Delete User
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/api/users/:id
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+params:path {
+  id: <user-id>
+}
+
+tests {
+  expect(res.getStatus()).to.equal(204);
+}
+
+docs {
+  ## Admin — Delete User
+
+  Supprime un utilisateur par son ID. Remplacer `:id` par l'UUID cible.
+
+  **Réponse attendue :** `204` (pas de corps)
+}
