@@ -1,0 +1,46 @@
+meta {
+  name: Create Match
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/matches
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "gameId": "<game-uuid>"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 201 && body.match) {
+    bru.setEnvVar("matchId", body.match.id);
+    console.log("Match ID saved:", body.match.id);
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(201);
+  const body = res.getBody();
+  expect(body.match).to.have.property('status', 'WAITING');
+}
+
+docs {
+  ## Create Match
+
+  Crée une nouvelle partie en statut WAITING. Requiert un token valide.
+  Remplacer `<game-uuid>` par l'ID du jeu (obtenu via GET /api/games).
+
+  Le matchId est sauvegardé automatiquement dans `{{matchId}}`.
+
+  **Réponse attendue :** `201` + `{ match }` avec `status: WAITING`
+}

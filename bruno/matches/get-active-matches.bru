@@ -1,0 +1,28 @@
+meta {
+  name: Get Active Matches
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/matches
+  body: none
+  auth: none
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.matches).to.be.an('array');
+  body.matches.forEach(m => {
+    expect(m.status).to.equal('ONGOING');
+  });
+}
+
+docs {
+  ## Get Active Matches
+
+  Retourne toutes les parties en cours (ONGOING). Route publique.
+
+  **Réponse attendue :** `200` + `{ matches: [...] }` (status ONGOING uniquement)
+}
