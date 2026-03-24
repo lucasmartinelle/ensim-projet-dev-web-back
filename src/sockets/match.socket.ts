@@ -25,7 +25,24 @@ export function registerMatchHandlers(io: Server, socket: Socket): void {
 
             await socket.join(`match:${matchId}`);
 
-            const state = getState(matchId);
+            let state = getState(matchId);
+
+            // Réinitialiser le GameState si le serveur a redémarré (match ONGOING mais état perdu)
+            if (!state && match.status === 'ONGOING') {
+                const game = await prisma.game.findUnique({ where: { id: match.gameId } });
+                state = {
+                    matchId,
+                    gameSlug: game?.slug ?? '',
+                    board: Array(9).fill(null),
+                    currentTurn: match.players[0].userId,
+                    players: match.players.map((p) => p.userId),
+                    spectators: [],
+                    socketIds: new Map(),
+                    startedAt: match.createdAt,
+                };
+                setState(matchId, state);
+            }
+
             if (state) {
                 state.socketIds.set(socket.data.userId, socket.id);
                 setState(matchId, state);
@@ -112,6 +129,38 @@ export function registerMatchHandlers(io: Server, socket: Socket): void {
             state.socketIds.delete(socket.data.userId);
             state.spectators = state.spectators.filter((id) => id !== socket.data.userId);
             setState(matchId, state);
+        }
+    });
+
+    socket.on('disconnect', async () => {
+        if (socket.data.role === 'spectator') return;
+
+        // Chercher les parties ONGOING où ce joueur est connecté
+        for (const [matchId, state] of (await import('../modules/matches/match.state')).matchStates) {
+            if (!state.players.includes(socket.data.userId)) continue;
+
+            const match = await prisma.match.findUnique({ where: { id: matchId } });
+            if (!match || match.status !== 'ONGOING') continue;
+
+            // Forfait : l'adversaire gagne
+            const winnerId = state.players.find((id) => id !== socket.data.userId) ?? null;
+            const scores = state.players.map((userId) => ({
+                userId,
+                score: userId === winnerId ? 1 : 0,
+            }));
+
+            try {
+                await endMatch(matchId, scores);
+            } catch {
+                // La partie a peut-être déjà été terminée
+            }
+
+            io.to(`match:${matchId}`).emit('match-end', {
+                scores,
+                winnerId,
+                isDraw: false,
+                reason: 'forfeit',
+            });
         }
     });
 }
