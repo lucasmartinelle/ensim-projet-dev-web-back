@@ -114,4 +114,36 @@ export function registerMatchHandlers(io: Server, socket: Socket): void {
             setState(matchId, state);
         }
     });
+
+    socket.on('disconnect', async () => {
+        if (socket.data.role === 'spectator') return;
+
+        // Chercher les parties ONGOING où ce joueur est connecté
+        for (const [matchId, state] of (await import('../modules/matches/match.state')).matchStates) {
+            if (!state.players.includes(socket.data.userId)) continue;
+
+            const match = await prisma.match.findUnique({ where: { id: matchId } });
+            if (!match || match.status !== 'ONGOING') continue;
+
+            // Forfait : l'adversaire gagne
+            const winnerId = state.players.find((id) => id !== socket.data.userId) ?? null;
+            const scores = state.players.map((userId) => ({
+                userId,
+                score: userId === winnerId ? 1 : 0,
+            }));
+
+            try {
+                await endMatch(matchId, scores);
+            } catch {
+                // La partie a peut-être déjà été terminée
+            }
+
+            io.to(`match:${matchId}`).emit('match-end', {
+                scores,
+                winnerId,
+                isDraw: false,
+                reason: 'forfeit',
+            });
+        }
+    });
 }
