@@ -10,12 +10,12 @@ delete {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{adminToken}}
+params:path {
+  id: 6884141c-93b8-4f3a-95dd-8ffd8907e5d5
 }
 
-params:path {
-  id: <user-id>
+auth:bearer {
+  token: {{adminToken}}
 }
 
 tests {
@@ -24,8 +24,8 @@ tests {
 
 docs {
   ## Admin — Delete User
-
+  
   Supprime un utilisateur par son ID. Remplacer `:id` par l'UUID cible.
-
+  
   **Réponse attendue :** `204` (pas de corps)
 }

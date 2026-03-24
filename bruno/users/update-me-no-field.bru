@@ -5,7 +5,7 @@ meta {
 }
 
 patch {
-  url: {{baseUrl}}/api/users/me
+  url: <user-id>{{baseUrl}}/api/users/me
   body: json
   auth: bearer
 }
@@ -24,8 +24,8 @@ tests {
 
 docs {
   ## Update Me — Aucun champ
-
+  
   Doit retourner 400 si aucun champ n'est fourni (refine Zod).
-
+  
   **Réponse attendue :** `400`
 }
