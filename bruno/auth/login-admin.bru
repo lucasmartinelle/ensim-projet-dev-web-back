@@ -1,0 +1,43 @@
+meta {
+  name: Login Admin
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "player@example.com",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  const body = res.getBody();
+  if (res.getStatus() === 200 && body.token) {
+    bru.setEnvVar("adminToken", body.token);
+    console.log("Admin token saved:", body.token.substring(0, 30) + "...");
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.token).to.be.a('string').and.not.empty;
+  expect(body.user.role).to.equal('ADMIN');
+}
+
+docs {
+  ## Login Admin
+  
+  Authentifie l'administrateur et sauvegarde le token dans `{{adminToken}}`.
+  
+  Lancer cette requête avant toutes les requêtes admin (`/api/users`, suspend, delete).
+  
+  **Réponse attendue :** `200` + `{ token, user }` avec `role: ADMIN`
+}
