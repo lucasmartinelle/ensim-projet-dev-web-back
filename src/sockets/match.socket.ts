@@ -1,6 +1,8 @@
 import type { Server, Socket } from 'socket.io';
 import { prisma } from '../db/prisma';
 import { getState, setState } from '../modules/matches/match.state';
+import { applyAction, createBoard } from './games/tic-tac-toe';
+import { endMatch } from '../modules/matches/matches.service';
 
 export function registerMatchHandlers(io: Server, socket: Socket): void {
     socket.on('join-match', async ({ matchId }: { matchId: string }) => {
@@ -56,6 +58,49 @@ export function registerMatchHandlers(io: Server, socket: Socket): void {
             }
         } catch {
             socket.emit('error', { message: 'Erreur lors de la connexion en spectateur' });
+        }
+    });
+
+    socket.on('game-action', async ({ matchId, action }: { matchId: string; action: { index: number } }) => {
+        if (socket.data.role === 'spectator') return;
+
+        try {
+            const state = getState(matchId);
+            if (!state) {
+                socket.emit('error', { message: 'Partie introuvable en mémoire' });
+                return;
+            }
+
+            if (state.currentTurn !== socket.data.userId) {
+                socket.emit('error', { message: "Ce n'est pas votre tour" });
+                return;
+            }
+
+            const board = Array.isArray(state.board) ? state.board : createBoard();
+            const result = applyAction(board as (string | null)[], action, socket.data.userId);
+
+            const nextTurn = state.players.find((id) => id !== socket.data.userId) ?? socket.data.userId;
+            const updatedState = { ...state, board: result.board, currentTurn: nextTurn };
+            setState(matchId, updatedState);
+
+            io.to(`match:${matchId}`).emit('state-update', updatedState);
+
+            if (result.isTerminal) {
+                const scores = state.players.map((userId) => ({
+                    userId,
+                    score: userId === result.winner ? 1 : 0,
+                }));
+
+                await endMatch(matchId, scores);
+
+                io.to(`match:${matchId}`).emit('match-end', {
+                    scores,
+                    winnerId: result.winner,
+                    isDraw: result.isDraw,
+                });
+            }
+        } catch (err) {
+            socket.emit('error', { message: err instanceof Error ? err.message : 'Action invalide' });
         }
     });
 
