@@ -1,0 +1,28 @@
+meta {
+  name: Admin - Delete Game
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseUrl}}/api/games/tic-tac-toe
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(204);
+}
+
+docs {
+  ## Admin — Delete Game
+
+  Supprime un jeu par son slug (cascade sur scores et matches).
+  Requiert un token admin (`adminToken`).
+
+  **Réponse attendue :** `204` (pas de corps)
+}

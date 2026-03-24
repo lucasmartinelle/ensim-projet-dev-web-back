@@ -1,0 +1,25 @@
+meta {
+  name: List Games
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/games
+  body: none
+  auth: none
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.games).to.be.an('array');
+}
+
+docs {
+  ## List Games
+
+  Retourne tous les jeux disponibles (route publique).
+
+  **Réponse attendue :** `200` + `{ games: [...] }`
+}

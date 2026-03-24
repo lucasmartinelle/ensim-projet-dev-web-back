@@ -1,0 +1,27 @@
+meta {
+  name: Get Leaderboard
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/games/tic-tac-toe/leaderboard
+  body: none
+  auth: none
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.leaderboard).to.be.an('array');
+}
+
+docs {
+  ## Get Leaderboard
+
+  Retourne le top 10 (défaut) des scores pour un jeu (route publique).
+
+  Paramètre optionnel : `?limit=5`
+
+  **Réponse attendue :** `200` + `{ leaderboard: [{ id, value, createdAt, user: { id, username } }] }`
+}
