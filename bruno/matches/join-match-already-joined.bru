@@ -1,0 +1,27 @@
+meta {
+  name: Join Match - Déjà inscrit
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/matches/{{matchId}}/join
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  expect(res.getStatus()).to.not.equal(200);
+}
+
+docs {
+  ## Join Match — Déjà inscrit
+
+  Tenter de rejoindre une partie où on est déjà inscrit → erreur.
+
+  **Réponse attendue :** erreur (non-200)
+}

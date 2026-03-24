@@ -1,0 +1,32 @@
+meta {
+  name: Join Match
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/matches/{{matchId}}/join
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.match).to.have.property('id');
+}
+
+docs {
+  ## Join Match
+
+  Rejoint une partie en WAITING. Requiert un token valide (joueur différent du créateur).
+  Utilise `{{matchId}}` sauvegardé par Create Match.
+
+  Si 2 joueurs → le match passe en ONGOING et un GameState est initialisé en mémoire.
+
+  **Réponse attendue :** `200` + `{ match }`
+}

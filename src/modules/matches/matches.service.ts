@@ -79,7 +79,7 @@ export async function joinMatch(matchId: string, userId: string): Promise<MatchW
 
 export async function getActiveMatches(): Promise<MatchWithRelations[]> {
     return prisma.match.findMany({
-        where: { status: 'ONGOING' },
+        where: { status: { in: ['WAITING', 'ONGOING'] } },
         include: {
             game: { select: { id: true, name: true, slug: true } },
             players: { include: { user: { select: { id: true, username: true } } } },
