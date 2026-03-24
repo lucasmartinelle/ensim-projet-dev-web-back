@@ -25,7 +25,24 @@ export function registerMatchHandlers(io: Server, socket: Socket): void {
 
             await socket.join(`match:${matchId}`);
 
-            const state = getState(matchId);
+            let state = getState(matchId);
+
+            // Réinitialiser le GameState si le serveur a redémarré (match ONGOING mais état perdu)
+            if (!state && match.status === 'ONGOING') {
+                const game = await prisma.game.findUnique({ where: { id: match.gameId } });
+                state = {
+                    matchId,
+                    gameSlug: game?.slug ?? '',
+                    board: Array(9).fill(null),
+                    currentTurn: match.players[0].userId,
+                    players: match.players.map((p) => p.userId),
+                    spectators: [],
+                    socketIds: new Map(),
+                    startedAt: match.createdAt,
+                };
+                setState(matchId, state);
+            }
+
             if (state) {
                 state.socketIds.set(socket.data.userId, socket.id);
                 setState(matchId, state);
