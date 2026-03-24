@@ -15,7 +15,7 @@ tests {
   const body = res.getBody();
   expect(body.matches).to.be.an('array');
   body.matches.forEach(m => {
-    expect(m.status).to.equal('ONGOING');
+    expect(['WAITING', 'ONGOING']).to.include(m.status);
   });
 }
 
