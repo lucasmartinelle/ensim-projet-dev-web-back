@@ -43,26 +43,3 @@ export async function deleteAccount(id: string): Promise<void> {
     await prisma.user.delete({ where: { id } });
 }
 
-export async function listAll({ page, limit }: { page: number; limit: number }): Promise<{
-    data: SafeUser[];
-    total: number;
-    page: number;
-    limit: number;
-}> {
-    const [data, total] = await Promise.all([
-        prisma.user.findMany({
-            select: safeUserSelect,
-            skip: (page - 1) * limit,
-            take: limit,
-            orderBy: { createdAt: 'desc' },
-        }),
-        prisma.user.count(),
-    ]);
-    return { data, total, page, limit };
-}
-
-export async function suspend(id: string, suspended: boolean): Promise<SafeUser> {
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) throw new Error('Utilisateur introuvable');
-    return prisma.user.update({ where: { id }, data: { suspended }, select: safeUserSelect });
-}
