@@ -1,0 +1,26 @@
+meta {
+  name: Get Leaderboard - Avec Limit
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/games/tic-tac-toe/leaderboard?limit=5
+  body: none
+  auth: none
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.leaderboard).to.be.an('array');
+  expect(body.leaderboard.length).to.be.at.most(5);
+}
+
+docs {
+  ## Get Leaderboard — Avec Limit
+
+  Retourne au maximum 5 scores.
+
+  **Réponse attendue :** `200` + tableau de max 5 entrées
+}

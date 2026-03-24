@@ -1,0 +1,39 @@
+meta {
+  name: Admin - Create Game
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/games
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+body:json {
+  {
+    "name": "Tic-Tac-Toe",
+    "slug": "tic-tac-toe",
+    "description": "Le jeu classique de morpion à deux joueurs."
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(201);
+  const body = res.getBody();
+  expect(body.game).to.have.property('slug', 'tic-tac-toe');
+}
+
+docs {
+  ## Admin — Create Game
+
+  Crée un nouveau jeu. Requiert un token admin (`adminToken`).
+
+  Lancer **Login Admin** d'abord pour obtenir le token.
+
+  **Réponse attendue :** `201` + `{ game }`
+}
