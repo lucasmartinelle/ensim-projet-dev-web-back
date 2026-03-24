@@ -2,6 +2,7 @@ import { Server } from 'socket.io';
 import type { Server as HttpServer } from 'http';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
+import { registerMatchHandlers } from './match.socket';
 
 interface JwtPayload {
     sub: string;
@@ -28,6 +29,10 @@ export function initSockets(httpServer: HttpServer): Server {
         } catch {
             next(new Error('Unauthorized'));
         }
+    });
+
+    io.on('connection', (socket) => {
+        registerMatchHandlers(io, socket);
     });
 
     return io;
