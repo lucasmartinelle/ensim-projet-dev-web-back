@@ -1,0 +1,29 @@
+meta {
+  name: Submit Score - Sans Auth
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/games/tic-tac-toe/scores
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "value": 42
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(401);
+}
+
+docs {
+  ## Submit Score — Sans Auth
+
+  Doit retourner 401 si aucun token n'est fourni.
+
+  **Réponse attendue :** `401`
+}

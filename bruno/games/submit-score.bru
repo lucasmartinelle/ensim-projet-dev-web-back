@@ -1,0 +1,37 @@
+meta {
+  name: Submit Score
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/games/tic-tac-toe/scores
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "value": 42
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(201);
+  const body = res.getBody();
+  expect(body.score).to.have.property('value', 42);
+}
+
+docs {
+  ## Submit Score
+
+  Soumet un score pour un jeu. Requiert un token valide.
+
+  Lancer **Login** d'abord pour obtenir le token.
+
+  **Réponse attendue :** `201` + `{ score }`
+}

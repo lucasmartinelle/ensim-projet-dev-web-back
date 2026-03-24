@@ -1,0 +1,37 @@
+meta {
+  name: Admin - Upsert Home Content
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/admin/home-content/hero_title
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+body:json {
+  {
+    "value": "Bienvenue sur la plateforme de jeux !"
+  }
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.item).to.have.property('key', 'hero_title');
+  expect(body.item).to.have.property('value', 'Bienvenue sur la plateforme de jeux !');
+}
+
+docs {
+  ## Admin — Upsert Home Content
+
+  Crée ou met à jour une entrée de contenu par sa clé.
+  Requiert un token admin.
+
+  **Réponse attendue :** `200` + `{ item }`
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Admin - Get Home Content
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/admin/home-content
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.content).to.be.an('array');
+}
+
+docs {
+  ## Admin — Get Home Content
+
+  Retourne le contenu de la page d'accueil. Requiert un token admin.
+
+  **Réponse attendue :** `200` + `{ content: [...] }`
+}

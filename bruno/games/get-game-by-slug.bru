@@ -1,0 +1,25 @@
+meta {
+  name: Get Game By Slug
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/games/tic-tac-toe
+  body: none
+  auth: none
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.game).to.have.property('slug', 'tic-tac-toe');
+}
+
+docs {
+  ## Get Game By Slug
+
+  Retourne un jeu par son slug (route publique).
+
+  **Réponse attendue :** `200` + `{ game }`
+}

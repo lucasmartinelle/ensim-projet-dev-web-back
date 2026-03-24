@@ -1,0 +1,31 @@
+meta {
+  name: Get My Scores
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/users/me/scores
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.scores).to.be.an('array');
+}
+
+docs {
+  ## Get My Scores
+
+  Retourne l'historique des scores de l'utilisateur authentifié.
+
+  Paramètre optionnel : `?gameSlug=tic-tac-toe` pour filtrer par jeu.
+
+  **Réponse attendue :** `200` + `{ scores: [{ id, value, createdAt, game: { id, name, slug } }] }`
+}

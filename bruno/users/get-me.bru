@@ -1,0 +1,33 @@
+meta {
+  name: Get Me
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/users/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.user).to.have.property('id');
+  expect(body.user).to.have.property('email');
+  expect(body.user).to.not.have.property('passwordHash');
+}
+
+docs {
+  ## Get Me
+
+  Retourne le profil complet de l'utilisateur authentifié.
+
+  Lancer **Login** d'abord pour obtenir le token.
+
+  **Réponse attendue :** `200` + `{ user }`
+}

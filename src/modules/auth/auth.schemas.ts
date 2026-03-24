@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const RegisterSchema = z.object({
-    email: z.string().email('Adresse email invalide'),
+    email: z.email('Adresse email invalide'),
     username: z
         .string()
         .min(3, "Le nom d'utilisateur doit contenir au moins 3 caractères")
@@ -11,7 +11,7 @@ export const RegisterSchema = z.object({
 });
 
 export const LoginSchema = z.object({
-    email: z.string().email('Adresse email invalide'),
+    email: z.email('Adresse email invalide'),
     password: z.string().min(1, 'Le mot de passe est requis'),
 });
 

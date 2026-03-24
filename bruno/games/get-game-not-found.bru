@@ -1,0 +1,23 @@
+meta {
+  name: Get Game - Not Found
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/games/jeu-inexistant
+  body: none
+  auth: none
+}
+
+tests {
+  expect(res.getStatus()).to.equal(500);
+}
+
+docs {
+  ## Get Game — Not Found
+
+  Slug inexistant → erreur retournée par le errorMiddleware.
+
+  **Réponse attendue :** erreur
+}
