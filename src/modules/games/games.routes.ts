@@ -3,6 +3,7 @@ import * as gamesController from './games.controller';
 import { scoresRouter } from '../scores/scores.routes';
 import { isAuthenticated } from '../../middlewares/auth.middleware';
 import { isAdmin } from '../../middlewares/role.middleware';
+import { uploadCoverMiddleware } from '../../middlewares/upload.middleware';
 
 export const gamesRouter = Router();
 
@@ -180,6 +181,67 @@ gamesRouter.get('/:slug', gamesController.getGameBySlug);
  *               $ref: '#/components/schemas/Error'
  */
 gamesRouter.patch('/:slug', isAuthenticated, isAdmin, gamesController.updateGame);
+
+/**
+ * @openapi
+ * /games/{slug}/cover:
+ *   post:
+ *     tags:
+ *       - Games
+ *     summary: Uploader la cover image d'un jeu (Admin)
+ *     description: |
+ *       Remplace la cover image d'un jeu par un fichier uploadé.
+ *       Formats acceptés : JPG, PNG, WebP, GIF. Taille max : 2 Mo.
+ *       L'ancienne image locale est supprimée automatiquement.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: tic-tac-toe
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [cover]
+ *             properties:
+ *               cover:
+ *                 type: string
+ *                 format: binary
+ *                 description: Fichier image (JPG, PNG, WebP, GIF, max 2 Mo)
+ *     responses:
+ *       200:
+ *         description: Cover image mise à jour
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 game:
+ *                   $ref: '#/components/schemas/Game'
+ *       400:
+ *         description: Fichier manquant ou format invalide
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         description: Jeu introuvable
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+gamesRouter.post('/:slug/cover', isAuthenticated, isAdmin, uploadCoverMiddleware, gamesController.uploadCover);
 
 /**
  * @openapi

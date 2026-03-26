@@ -1,0 +1,41 @@
+meta {
+  name: Admin - Upload Cover Image
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/games/tic-tac-toe/cover
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{adminToken}}
+}
+
+body:multipart-form {
+  cover: @file(/chemin/vers/image.png)
+}
+
+tests {
+  expect(res.getStatus()).to.equal(200);
+  const body = res.getBody();
+  expect(body.game).to.have.property('slug', 'tic-tac-toe');
+  expect(body.game.coverImage).to.include('/uploads/games/');
+}
+
+docs {
+  ## Admin — Upload Cover Image
+
+  Upload une image de couverture pour un jeu via `multipart/form-data`.
+
+  - Champ requis : `cover` (fichier image)
+  - Formats acceptés : JPG, PNG, WebP, GIF
+  - Taille max : 2 Mo
+  - Remplace et supprime automatiquement l'ancienne cover si elle était locale
+
+  Requiert un token admin (`adminToken`). Lancer **Login Admin** d'abord.
+
+  **Réponse attendue :** `200` + `{ game }` avec `coverImage` → `/uploads/games/<filename>`
+}

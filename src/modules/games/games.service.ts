@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { prisma } from '../../db/prisma';
 import type { Game } from '../../generated/prisma/client';
 
@@ -19,6 +21,22 @@ export async function updateGame(slug: string, data: { name?: string; slug?: str
     const game = await prisma.game.findUnique({ where: { slug } });
     if (!game) throw new Error('Jeu introuvable');
     return prisma.game.update({ where: { slug }, data });
+}
+
+export async function updateGameCover(slug: string, filename: string): Promise<Game> {
+    const game = await prisma.game.findUnique({ where: { slug } });
+    if (!game) throw new Error('Jeu introuvable');
+
+    // Supprimer l'ancienne image si elle était stockée localement
+    if (game.coverImage?.startsWith('/uploads/')) {
+        const oldPath = path.join(process.cwd(), game.coverImage);
+        fs.rm(oldPath, { force: true }, () => undefined);
+    }
+
+    return prisma.game.update({
+        where: { slug },
+        data: { coverImage: `/uploads/games/${filename}` },
+    });
 }
 
 export async function deleteGame(slug: string): Promise<void> {
