@@ -609,6 +609,49 @@ Supprime un jeu.
 
 ---
 
+#### `POST /api/games/:slug/cover` — Admin
+
+Upload ou remplace la cover image d'un jeu.
+
+**Accès :** `isAdmin`
+
+**Content-Type :** `multipart/form-data`
+
+**Champ :**
+| Champ | Type | Contraintes |
+|-------|------|-------------|
+| `cover` | `file` | Requis — JPG, PNG, WebP ou GIF, max 2 Mo |
+
+**Exemple de requête (curl) :**
+```bash
+curl -X POST http://localhost:3000/api/games/tic-tac-toe/cover \
+  -H "Authorization: Bearer <token>" \
+  -F "cover=@/chemin/vers/image.png"
+```
+
+**Réponse `200` :**
+```json
+{
+  "game": {
+    "id": "uuid",
+    "name": "Tic-Tac-Toe",
+    "slug": "tic-tac-toe",
+    "description": "Le classique jeu de morpion à deux joueurs.",
+    "coverImage": "/uploads/games/tic-tac-toe-1743000000000.png",
+    "createdAt": "2026-03-24T10:00:00.000Z"
+  }
+}
+```
+
+> La valeur de `coverImage` est un chemin relatif servi directement par le backend : `http://localhost:3000/uploads/games/<filename>`.
+> Si le jeu avait déjà une cover uploadée localement (chemin `/uploads/…`), elle est supprimée automatiquement.
+
+**Erreurs possibles :**
+- `400` — fichier manquant ou format non supporté
+- `404` — `"Jeu introuvable"`
+
+---
+
 ### 5.5 Scores
 
 #### `POST /api/games/:gameSlug/scores`
@@ -1286,6 +1329,7 @@ Diagonales: [0,4,8], [2,4,6]
 | `POST` | `/api/games` | Admin | Créer un jeu |
 | `PATCH` | `/api/games/:slug` | Admin | Modifier un jeu |
 | `DELETE` | `/api/games/:slug` | Admin | Supprimer un jeu |
+| `POST` | `/api/games/:slug/cover` | Admin | Uploader la cover image |
 | `POST` | `/api/games/:gameSlug/scores` | Auth | Soumettre un score |
 | `GET` | `/api/matches` | Public | Matches actifs |
 | `GET` | `/api/matches/:id` | Public | Détails d'un match |
