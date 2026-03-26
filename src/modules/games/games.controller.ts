@@ -52,6 +52,19 @@ export async function updateGame(req: Request, res: Response, next: NextFunction
     }
 }
 
+export async function uploadCover(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        if (!req.file) {
+            res.status(400).json({ error: 'Aucun fichier fourni. Utilisez le champ "cover".' });
+            return;
+        }
+        const game = await gamesService.updateGameCover(String(req.params.slug), req.file.filename);
+        res.status(200).json({ game });
+    } catch (err) {
+        next(err);
+    }
+}
+
 export async function deleteGame(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         await gamesService.deleteGame(String(req.params.slug));
